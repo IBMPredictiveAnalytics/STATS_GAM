@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>STATS GAM Extension Command</title>
+
+<link rel="stylesheet" type="text/css" href="extsyntax.css" />
+
+
+
+
+
+</head>
+
+<body>
+<h1>STATS GAM Extension Command</h1>
+
+<p>This procedure calculates a generalized additive model (GAM).  GAMs are linear in predictor terms that
+can be simple variables or various kinds of splines or polynomials.  This preserves the simplicity
+of the linear model while allowing flexibly for predictors to have a nonlinear effect
+on the dependent variable.  In addition, you can specify the error distribution and link
+function for the model.<p>
+
+
+<div class="syntax">
+<p>STATS GAM 
+DEPENDENT = <em>variable</em><sup>&#42;</sup><br/>
+VARIABLES = <em>linear variable list</em></br>
+ID = <em>variable</em><br/>
+ERRORDIST = BINOMIAL or GAUSSIAN<sup>&#42;&#42;</sup> or GAMMA or 
+INVERSEGAUSSIAN or POISSON
+or QUASI or QUASIBINOMIAL or QUASIPOISSON</br>
+LINK = IDENTITY or LOG or INVERSE or LOGIT or 
+PROBIT or CAUCHIT
+or CLOGLOG or SQRT or MU2INV</br>
+OFFSET = <em>variable</em>
+
+</p>
+<p>/NONLINEAR1, /NONLINEAR2, /NONLINEAR3, /NONLINEAR4, /NONLINEAR5<br/>
+SMOOTHER<sup>&#42;</sup> = S or LO or BS or NS or POLY</br>
+PARM1<sup>&#42;</sup> = <em>number</em><br/>
+PARM2 = <em>number</em><br/>
+</p>
+<p>/OPTIONS<br/>
+PLOT = YES<sup>&#42;&#42;</sup> or NO</br>
+EPSILON = <em>number</em></br>
+BFEPSILON = <em>number</em></br>
+MAXIT = <em>number</em></br>
+BFMAXIT = <em>number</em></br>
+SHOWITERATIONS = NO<sup>&#42;&#42;</sup> or YES</br>
+</p>
+<p>/MISSING</br>
+ACTION = LISTWISE<sup>&#42;&#42;</sup> or FAIL</br>
+</p>
+<p>/   SAVE</br>
+DATASET = <em>dataset name</em></br>
+TYPE = LINK<sup>&#42;&#42;</sup> or RESPONSE or TERMS</br>
+STDERR = YES<sup>&#42;&#42;</sup> or NO
+</p>
+
+<p>/HELP</p>
+
+<p><sup>&#42;</sup> Required<br/>
+<sup>&#42;&#42;</sup> Default</p>
+</div>
+<p>STATS GAM /HELP.  prints this information and does nothing else.</p>
+
+<pre class="example"><code>STATS GAM DEPENDENT=salary VARIABLES=jobtime ID=id ERRORDIST=GAUSSIAN
+/NONLINEAR1 SMOOTHER=S VARIABLES =  educ prevexp PARM1=6
+/NONLINEAR3 SMOOTHER= BS VARIABLES = bdate PARM1=6 PARM2=3.
+</code></pre>
+
+<p>Split files and the Statistics case weights are not supported by this procedure.
+</p>
+
+<p><strong>DEPENDENT</strong> specifies the dependent variable.
+Since the default error distribution and link are for a continuous dependent variable,
+if it is categorical, change the error distribution and link specification appropriately.</p>
+
+<p>The <strong>VARIABLES</strong> keywords specify the predictor variables.
+On the main subcommand, the variables are entered linearly.  On the NONLINEAR
+subcommands, they are entered according to the SMOOTHER specifications.
+There need not be any linear variables nor any nonlinear variables, but at
+least one linear or nonlinear variable must be specified
+</p>
+
+<p><strong>ID</strong> specifies an optional ID variable
+to be written to the output
+dataset if one is requested.  This will facilitate merging the results into the input dataset.  
+If no variable is specified, the id values will be sequential integers.</p>
+<p>
+In order to merge the datasets using the ID variable,
+the input dataset must be in the sort order of the ID variable.</p>
+<p>The <strong>ERRORDIST</strong> and <strong>LINK</strong> parameters
+specify the error distribution and link function.  The default is gaussian with
+identify link.
+<ul>
+<li><strong>GAUSSIAN</strong>.  Links: <strong>IDENTITY, LOG, INVERSE</strong></li>
+<li><strong>BINOMIAL</strong>.  Links: <strong>LOGIT</strong> (logistic) 
+<strong>PROBIT</strong> (Normal) 
+<strong>CAUCHIT</strong> (Cauchy)
+<strong>LOG</strong>
+<strong>CLOGLOG</strong> (complementary log-log)</li>
+<li><strong>GAMMA</strong>. Links: <strong>INVERSE, IDENTITY, LOG</strong></li>
+<li><strong>POISSON</strong>. Links: <strong>LOG, IDENTITY, SQRT</strong></li>
+<li><strong>INVERSEGAUSSIAN</strong>. Links: <INVERSE, IDENTITY, LOG, MU2INV</STRONG> (1/mu**2)</li>
+<li><strong>QUASI</strong>. Links: this and the following two distributions all support
+<strong>LOGIT, PROBIT, CLOGLOG, IDENTITY, INVERSE, LOG, MU2INV, SQRT</STRONG></LI>
+<li><strong>QUASIBINOMIAL</STRONG>.</LI>
+<li><strong>QASIPOISSON</strong>.</li>
+</ul>
+<p>The quasibinomial and quasipoisson distributions are the same
+as the binomial and poisson choices except that they have an extra parameter to
+allow for overdispersion.</p>
+
+
+<h2>NONLINEAR1 NONLINEAR2 NONLINEAR3 NONLINEAR4 NONLINEAR5</h2>
+<p>Each NONLINEAR subcommand specifies one or more variables and the
+smoother to be applied to them.  The smoother on a subcommand applies
+to all the variables listed on that subcommand.  The subcommand numbers
+have no meaning other than to distinguish the sets of specifications.</p>
+<p>
+<p>The smoothers are specified as follows.  Each requires one or two parameters
+specified as PARM1 or PARM2.
+<ul>
+<li><strong>S</strong>. smoothing spline. <strong>PARM1</strong> = degrees
+of freedom.  The value should be greater than 1.  A value of 1 is a linear fit.
+Larger values mean more flexibility.</li>
+<li><strong>LO</strong> loess.  <strong>PARM1</strong> is the span: the number of
+observations in the neighborhood used around each point.  <strong>PARM2</strong>
+is the the degree of the local polynomial.  It must be 1 or 2.</li>
+<li><strong>BS</strong> bspline.  <strong>PARM1</strong> is the degrees of freedom.
+<strong>PARM2</strong> is the degree of the polynomial.  PARM1 - PARM2 is the
+number of knots.</li>
+<li><strong>NS</strong>. natural cubic spline. <strong>PARM1</strong> is the
+degrees of freedom.  PARM1 - 1 is the number of knots, which will be placed
+automatically.  A value of 1, hence, means no knots.</li>
+<li><strong>POLY</strong>.  Orthogonal polynomial. <strong>PARM1</strong> is the
+degree of the polynomial.</li>
+</ul>
+<h2>OPTIONS</h2>
+<p>
+<strong>PLOT</strong> species whether plots are produced or not.
+A plot for each
+linear or nonlinear predictor is displayed.  If standard errors are
+requested on <strong>/SAVE</strong>, the plots include confidence intervals.  
+The CIs are +/- two standard deviations.</p>
+<p>The remaining parameters apply to convergence.
+<ul>
+<li><strong>EPSILON</strong>. convergence threshold for local scoring iterations</li>
+<li><strong>BFEPSILON</strong>. convergence threshold for backfitting iterations</li>
+<li><strong>MAXIT</strong>. maximum number of local scoring iterations</li>
+<li><strong>BFMAXIT</strong>. maximum number of backfitting iterations</li>
+<li><strong>ITERATIONS</strong>. whether to display the status for each iteration</li>
+</ul>
+
+<h2>MISSSING</h2>
+<p><strong>ACTION</strong> specifies whether missing values are handled
+with listwise deletion or cause the procedure to stop.
+<p>
+<h2>SAVE</h2>
+<p>This subcommand specifies whether or not to create a dataset of predicted vaues
+and what it contains</p>
+<p><strong>DATASET</strong> specifies a name for the dataset, which is created if
+a name is specified.  The dataset name must not already be in use.</p>
+<p><strong>TYPE</strong> specifies the type of the predicted values.
+<ul>
+<li><strong>LINK</strong> produces the predictions on the scale of the predictors.</li>
+<li><strong>RESPONSE</STRONG> produces prediction on the scale of the response.</li>
+<li><STRONG>TERMS</STRONG> produces a variable for each term in the model for its
+contribution to the predicted value.  The variable names will reflect
+the type of nonlinearity, including the parameter values.</li>
+</ul>
+<P><strong>STDERR</strong> specifies whether or not to include standard errors.
+
+<h3>Merging the Output Dataset with the Input</h3>
+To merge the output dataset into
+the input dataset, use the following code.<br/>
+<p class="code">
+DATASET ACTIVE input.</br>
+MATCH FILES /FILE=outputds /FILE=* /BY id.
+</p>
+<p>
+where input is the dataset name of the active dataset, 
+outputds is the output dataset name, and
+id is the name of the id variable.  Omit BY id
+if there is no id variable.
+Equivalently, use the Data > Merge Files > Add Variables
+menu item.  If using an id variable, the input dataset must
+be in its sort order.  If the output variables already exist
+in the input dataset, listing the output dataset first ensures
+that the new values will appear in the merged dataset.
+</p>
+
+<h3>Acknowledgements</h3>
+<p>This procedure uses the R GAM package written by Trevor Hastie.
+The specific package version is indicated in the procedure output.
+</p>
+
+<h3>Requirements</h3>
+This command requires the R Essentials.
+</p>
+<p>&copy; Portions Copyright IBM Corp. 1989, 2016</p>
+
+</body>
+
+</html>
+

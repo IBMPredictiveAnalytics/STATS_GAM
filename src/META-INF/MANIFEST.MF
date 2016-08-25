@@ -1,0 +1,18 @@
+Name: STATS GAM
+Dialog-Specs: STATS_GAM.spd
+Command-Specs: STATS_GAM.xml
+Code-Files: STATS_GAM.R
+Misc-Files: extsyntax.css,basictests.sps,STATS_GAM.htm,IBMdialogicon.p
+ ng,markdown.html
+Summary: Generalized Additive Model (GAM)
+Description: This procedure estimates a generalied additive model. GAM
+ s are linear in predictor terms that can be simple variables or vario
+ us kinds of splines or polynomials.  You can specify the error distri
+ bution and link function for the model.
+Author: JKP
+Version: 1.0.0
+Product-Version: 18
+Date: 8/10/2016
+Categories: statistics
+Plugins: R
+R-Packages: gam

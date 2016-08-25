@@ -1,0 +1,161 @@
+<html>
+<head>
+<title>Generalized Additive Models</title>
+<STYLE TYPE="text/css"> 
+<!-- 
+
+H1 {font-weight:bold; color:#006699; font-family:Verdana, Arial, sans-serif;font-size:125%; }
+H2 {font-weight:bold; color:#006699; font-family:Verdana, Arial, sans-serif;font-size:110%; }
+TABLE {font-size:100%;font-family:Verdana, Arial, sans-serif;}
+
+/* paragraph tags */
+.step {text-indent: -1.3em; margin-left:1.3em; margin-top: 0px;}
+.menuselection {margin-left:10px}
+.bullet {list-style-type: disc;margin-top:12px; margin-left:36px; text-indent:-1em; }
+.codeblock {background-color: #ffffe6; display:block; margin-left:5px; padding:5px;font-family:"courier new",monospace; }
+
+/* inline tags */
+.code {font-family: Courier,fixed pitch;}                           /*** used to tag pieces of code (syntax, Python, R, HTML, etc.)   ***/
+.screen {font-weight:bold; color:#408080}                       /*** used refer to on-screen text ***/
+.name {font-style: italic}                                                       /*** used to tag names, such as variable names, file names, and so forth ***/
+.runinhead {font-weight: bold} 
+.superscript {vertical-align:super; font-size:80%}
+.subscript {vertical-align:sub; font-size:80%}
+.symbol {font-family: Symbol}
+
+--> 
+</STYLE>
+</head>
+<body>
+<h1>Generalized Additive Models</h1>
+<p>This procedure calculates a generalized additive model (GAM).  GAMs are linear in predictor terms that
+can be simple variables or various kinds of splines or polynomials.  This preserves the simplicity
+of the linear model while allowing flexibly for predictors to have a nonlinear effect
+on the dependent variable.  In addition, you can specify the error distribution and link
+function for the model.<p>
+
+<p>The dialog box supports only a subset of the functionality available in syntax.  See the Additional Features section below for details.</p>
+
+</p>
+
+<p>Split files and the Statistics case weights are not supported by this procedure.
+</p>
+
+<p><span class="runinhead">Dependent Variable</span> Specify the dependent variable.
+Since the default error distribution and link are for a continuous dependent variable,
+if it is categorical, change the error distribution and link specification appropriately.</p>
+
+<p><span class="runinhead">Linear Terms</span> Select the linear predictors for the model,
+if any.</p>
+
+<p><span class="runinhead">Type of Nonlinearity</span>, <span class="runinhead">Parameter 1</span>,
+and <span class="runinhead">Parameter2</span> Specify the type of predictor nonlinearity and corresponding parameters.  The dropdown
+list provides five types: smoothing spline, loess, orthogonal polynomials, bspline, and
+natural spline.  The same type will be used for all the nonlinear terms.  Each type takes
+one or two parameters, shown as parm1 and parm2 in the list.  Enter the parameter
+value or values in the Parameter fields.  The degrees of freedom parameter is a smoothing parameter.
+For spline, the difference between the degree and degrees of freedom is the number
+of knots.  The natural spline is always cubic.</p>
+<p class="bullet">&bull;Using syntax variables can have different types of nonlinearity.
+</p>
+<p><span class="runinhead">Nonlinear Terms</span> Select the nonlinear predictors for the model,
+if any.  If there are none, the Type of Nonlinearity specifications are ignored.</p>
+<p class="bullet">&bull;There must be at least one linear or nonlinear predictor.</p>
+
+<p><span class="runinhead">Error Distribution and Link</span> Choose the error distribution
+and the link. Not all valid error and link combinations are listed.  Using syntax there
+are additional choices.  The quasibinomial and quasipoisson distributions are the same
+as the binomial and poisson choices except that they have an extra parameter to
+allow for overdispersion.</p>
+
+<p><span class="runinhead">ID</span> Specify an id variable to be written to the
+output dataset if one is created.  This will facilitate merging the results into the input dataset.  If no
+variable is specified, the id values will be sequential integers.</p>
+
+<p class="bullet">&bull;In order to merge the datasets using the ID variable,
+the input dataset must be in the sort order of the ID variable.</p>
+
+<p><span class="runinhead">Offset</span> Specify a variable to be included
+in the additive predictors.</p>
+
+<h2>Options</h2>
+<p><span class="runinhead">Missing Values</span> Choose listwise deletion or
+stopping if missing values are found.</p>
+
+<p><span class="runinhead">Plot results</span> If checked, a plot for each
+linear or nonlinear predictor is displayed.</p>
+
+<p><span class="runinhead">Convergence</span> You can adjust the convergence
+tolerances and maximum number of iterations.</p>
+
+<h2>Save Predicted Values</h2>
+<p>A dataset of predicted values with optional confidence intervals can
+be created.  The CIs are +/- two standard deviations.</p>
+
+<p><span class="runinhead">Dataset</span> The dataset is created
+if a dataset name is supplied.</p>
+<p class="bullet">&bull;The dataset name must not already be in use.</p>
+
+
+
+
+<p><span class="runinhead">Type of Predicted Value</span> 
+Choose the type of predicted value to produce.
+<ul>
+<li>Link produces the predictions on the scale of the predictors.</li>
+<li>Response produces prediction on the scale of the response.</li>
+<li>Terms produces a variable for each term in the model for its
+contribution to the predicted value.  The variable names will reflect
+the type of nonlinearity, including the parameter values.</li>
+</ul>
+
+
+<h2>Merging the Output Dataset with the Input</h2>
+To merge the output dataset into
+the input dataset, use the following code.<br/>
+<p class="code">
+DATASET ACTIVE input.</br>
+MATCH FILES /FILE=outputds /FILE=* /BY id.
+</p>
+<p>
+where input is the dataset name of the active dataset, 
+outputds is the output dataset name, and
+id is the name of the id variable.  Omit BY id
+if there is no id variable.
+Equivalently, use the Data > Merge Files > Add Variables
+menu item.  If using an id variable, the input dataset must
+be in its sort order.  If the output variables already exist
+in the input dataset, listing the output dataset first ensures
+that the new values will appear in the merged dataset.
+</p>
+
+<h2>Additional Features</h2>
+<p>Using syntax, up to five different nonlinearity specification
+can be used, each with a list of variables.  There are also more
+options for the error distribution and link combinations.</p>
+
+<p>To display the syntax help, run
+<p class="code">STATS GAM /HELP</p>
+<p>
+or press F1 on an instance of the command in the Syntax Editor
+(Statistics version 23 or later).
+</p>
+
+<h2>Acknowledgements</h2>
+<p>This procedure uses the R gam package by Trevor Hastie.
+The specific package version is indicated in the procedure output.
+</p>
+<p>A discussion of GAMs can be found in<br>
+Hastie, Trevor, Robert Tibshirani, and Jerome Friedman, <em>The Elements
+of Statistical Learning</em>, 2nd ed, Springer, 2009.
+</p>
+
+<h2>Requirements</h2>
+This command requires the R Essentials.
+</p>
+  <hr
+  <p style="font-family:Verdana, Arial, sans-serif;font-size:80%;">
+  © Portions Copyright IBM Corp. 2016</p>
+</body>
+</html>
+
