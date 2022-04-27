@@ -10,7 +10,7 @@ Description: This procedure estimates a generalied additive model. GAM
  us kinds of splines or polynomials.  You can specify the error distri
  bution and link function for the model.
 Author: JKP
-Version: 1.0.0
+Version: 1.0.1
 Product-Version: 18
 Date: 8/10/2016
 Categories: statistics
