@@ -1,4 +1,5 @@
 Name: STATS GAM
+Display-Name: Generalized Additive Models
 Dialog-Specs: STATS_GAM.spd
 Command-Specs: STATS_GAM.xml
 Code-Files: STATS_GAM.R
@@ -10,9 +11,10 @@ Description: This procedure estimates a generalied additive model. GAM
  us kinds of splines or polynomials.  You can specify the error distri
  bution and link function for the model.
 Author: JKP
-Version: 1.0.1
+Version: 1.0.0
 Product-Version: 18
 Date: 8/10/2016
 Categories: statistics
 Plugins: R
 R-Packages: gam
+Product-Version-Maximum: 99
